@@ -9,7 +9,7 @@ public class Deck {
 	
 	public Deck(){
 		//for card 2-9
-		for(int i = 1; i < 10; i++){
+		for(int i = 2; i < 10; i++){
 			for(int j = 0; j < 4; j++){
 				String rank = String.valueOf(i);
 				Card toAdd = new Card(rank, i);

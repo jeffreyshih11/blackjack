@@ -33,7 +33,7 @@ public class PlayGame {
 				play();
 			} else if (ready.equals("n")) {
 				end = true;
-			} else{
+			} else {
 				System.out.println("Please type 'y' or 'n'");
 				ready = in.next();
 			}
@@ -56,6 +56,12 @@ public class PlayGame {
 
 		deck = new Deck();
 		deck.shuffle();
+
+		human.addToHand(deck.hit());
+		human.addToHand(deck.hit());
+		dealer.addToHand(deck.hit());
+		dealer.addToHand(deck.hit());
+
 		firstTime = false;
 		return true;
 	}
@@ -65,11 +71,56 @@ public class PlayGame {
 		human.reset();
 		return true;
 	}
-	
-	public static boolean play(){
+
+	public static boolean play() {
 		System.out.println("play game here");
-		
-		
+
+		// human side
+		boolean endTurn = false;
+
+		while (!endTurn) {
+
+			// check hand a total
+			System.out.print("Your hand: ");
+			String sHand = "";
+			for (Card card : human.getHand()) {
+				sHand += card.getRank() + " ";
+			}
+
+			// print hand and total
+			System.out.println(sHand);
+			human.updateTotal();
+			System.out.println("Total: " + human.getTotal());
+
+			// Check if player bust
+			if (human.checkBust()) {
+				System.out.println("You bust!");
+				endTurn = true;
+			} 
+			//check if player got blackjack
+			else if (human.checkBlackjack()) {
+				System.out.println("Blackjack! You win!");
+				endTurn = true;
+			} 
+			//continue playing if neither
+			else {
+				System.out.println("Hit or Stay? (h/s)");
+				String action = in.next();
+				if (action.equals("h")) {
+					human.addToHand(deck.hit());
+
+				} else if (action.equals("s")) {
+					endTurn = true;
+				} else {
+					System.out.println("Please type 'h' or 's'");
+					action = in.next();
+				}
+			}
+
+		}
+
+		System.out.println("DONE-------------");
+		// dealer
 		return true;
 	}
 }
