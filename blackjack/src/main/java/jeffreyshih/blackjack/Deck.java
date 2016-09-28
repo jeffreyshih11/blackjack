@@ -5,7 +5,7 @@ import java.util.*;
 public class Deck {
 
 	//Will be a stack of 'Card' objects
-	private Stack deck = new Stack();
+	private Stack<Card> deck = new Stack<Card>();
 	
 	public Deck(){
 		//for card 2-9

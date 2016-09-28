@@ -1,6 +1,8 @@
 package jeffreyshih.blackjack;
 
+import java.io.Console;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Player {
 
@@ -9,11 +11,18 @@ public class Player {
 	private int total;
 	private int numWins;
 	
+	
 	public Player(String name){
 		this.name = name;
 		hand = new ArrayList<Card>();
 		total = 0;
 		numWins = 0;
+	}
+	
+	public boolean reset(){
+		hand.clear();
+		total = 0;
+		return true;
 	}
 	
 	public boolean addToHand(Card card){
@@ -37,7 +46,23 @@ public class Player {
 		return (total == 21);
 	}
 	
-	//for testing
+	//for testing purposes
+	public String getName(){
+		return name;
+	}
+	
+	public ArrayList<Card> getHand(){
+		return hand;
+	}
+	
+	public int getTotal(){
+		return total;
+	}
+	
+	public int getNumWins(){
+		return numWins;
+	}
+	
 	public boolean setTotal(int total){
 		this.total = total;
 		return true;
