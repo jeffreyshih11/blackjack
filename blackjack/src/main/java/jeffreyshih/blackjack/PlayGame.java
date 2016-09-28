@@ -27,15 +27,26 @@ public class PlayGame {
 		System.out.println("Welcome " + human.getName() + "!");
 
 		while (!end) {
-			System.out.println("Ready to play? (y/n)");
+
+			if (firstTime) {
+				System.out.println("Ready to play? (y/n)");
+				firstTime = false;
+			} else {
+				System.out.println("Wins for " + human.getName() + ": " + human.getNumWins());
+				System.out.println("Wins for the dealer: " + dealer.getNumWins());
+				System.out.println("Play again? (y/n)");
+				reset();
+			}
+
 			String ready = in.next();
 			if (ready.equals("y")) {
+
 				play();
 			} else if (ready.equals("n")) {
 				end = true;
 			} else {
 				System.out.println("Please type 'y' or 'n'");
-				ready = in.next();
+				//ready = in.next();
 			}
 		}
 		System.out.println("Thanks for playing!");
@@ -50,8 +61,6 @@ public class PlayGame {
 			String name = in.next();
 
 			human = new Player(name);
-		} else {
-			reset();
 		}
 
 		deck = new Deck();
@@ -62,47 +71,53 @@ public class PlayGame {
 		dealer.addToHand(deck.hit());
 		dealer.addToHand(deck.hit());
 
-		firstTime = false;
 		return true;
 	}
 
 	public static boolean reset() {
 		dealer.reset();
 		human.reset();
+		setUp();
 		return true;
 	}
 
 	public static boolean play() {
-		System.out.println("play game here");
+		// System.out.println("play game here");
 
 		// human side
 		boolean endTurn = false;
+		boolean winByBlackjack = false;
+		boolean loseByBust = false;
 
 		while (!endTurn) {
 
-			// check hand a total
-			System.out.print("Your hand: ");
-			String sHand = "";
-			for (Card card : human.getHand()) {
-				sHand += card.getRank() + " ";
-			}
-
-			// print hand and total
-			System.out.println(sHand);
-			human.updateTotal();
-			System.out.println("Total: " + human.getTotal());
+			human.showHandAndTotal();
 
 			// Check if player bust
 			if (human.checkBust()) {
-				System.out.println("You bust!");
-				endTurn = true;
-			} 
-			//check if player got blackjack
+				if (human.hasAce() == -1) {
+					System.out.println("~You bust!~");
+					endTurn = true;
+					//humanLoseByBust = true;
+					dealer.addWin();
+					return true;
+				}
+				else{
+					//System.out.println("found ace==========");
+					human.changeAce();
+					human.updateTotal();
+					System.out.println("Value of ace change from 11 to 1");
+					//System.out.println("==========New total is :" + human.getTotal());
+				}
+			}
+			// check if player got blackjack
 			else if (human.checkBlackjack()) {
-				System.out.println("Blackjack! You win!");
+				System.out.println("~Blackjack! You win!~");
 				endTurn = true;
-			} 
-			//continue playing if neither
+				winByBlackjack = true;
+				human.addWin();
+			}
+			// continue playing if neither
 			else {
 				System.out.println("Hit or Stay? (h/s)");
 				String action = in.next();
@@ -113,14 +128,82 @@ public class PlayGame {
 					endTurn = true;
 				} else {
 					System.out.println("Please type 'h' or 's'");
-					action = in.next();
+					//action = in.next();
 				}
 			}
 
 		}
 
-		System.out.println("DONE-------------");
+		//System.out.println("DONE-------------");
+		
+		
 		// dealer
+		endTurn = false;		
+		
+		if (winByBlackjack || loseByBust) {
+			return true;
+		} 
+		else {
+			System.out.println("-----Dealer's Turn------");
+			while (!endTurn) {
+
+				dealer.showHandAndTotal();
+
+				// Check if dealer bust
+				if (dealer.checkBust()) {
+					if (dealer.hasAce() == -1) {
+						System.out.println("Dealer bust!");
+						endTurn = true;
+						//dealerLoseByBust = true;
+						human.addWin();
+						return true;
+					}
+					else{
+						//System.out.println("found ace==========");
+						dealer.changeAce();
+						dealer.updateTotal();
+						System.out.println("Value of ace change from 11 to 1");
+						//System.out.println("==========New total is :" + dealer.getTotal());
+					}
+				}
+				// check if dealer got blackjack
+				else if (dealer.checkBlackjack()) {
+					System.out.println("Blackjack! Dealer won!");
+					endTurn = true;
+					//dealerWinByBlackjack = true;
+					dealer.addWin();
+					return true;
+				}
+				
+				// continue playing if neither
+				else {
+					if(dealer.getTotal() < 17){
+						System.out.println("Dealer will hit");
+						dealer.addToHand(deck.hit());
+					}
+					else{
+						System.out.println("Dealer stays");
+						endTurn = true;
+					}
+				}
+
+			}
+		}
+		
+		if(human.getTotal() > dealer.getTotal()){
+			human.addWin();
+			System.out.println("~You beat the dealer!~");
+		}
+		else if(dealer.getTotal() > human.getTotal()){
+			dealer.addWin();
+			System.out.println("~The dealer won!~");
+		}
+		else if(human.getTotal() == dealer.getTotal()){
+			System.out.println("--Tie Game--");
+		}
+
 		return true;
 	}
+
+	
 }
