@@ -84,7 +84,6 @@ public class Player {
 		return true;
 	}
 
-	// for testing purposes
 	public String getName() {
 		return name;
 	}
@@ -100,7 +99,10 @@ public class Player {
 	public int getNumWins() {
 		return numWins;
 	}
-
+	
+	
+	// for testing purposes
+	
 	public boolean setTotal(int total) {
 		this.total = total;
 		return true;

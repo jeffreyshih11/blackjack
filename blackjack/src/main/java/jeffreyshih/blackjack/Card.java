@@ -31,11 +31,11 @@ public class Card {
 		return false;
 	}
 	
-	//for testing purposes
 	public String getRank(){
 		return rank;
 	}
-
+	
+	//for testing purposes
 	public String toString(){
 		String out = "Rank: " + rank + "   Value: " + value;
 		return out;

@@ -7,6 +7,7 @@ public class Deck {
 	//Will be a stack of 'Card' objects
 	private Stack<Card> deck = new Stack<Card>();
 	
+	//populate deck with cards, numerical cards first then JQKA
 	public Deck(){
 		//for card 2-9
 		for(int i = 2; i < 10; i++){
@@ -34,14 +35,14 @@ public class Deck {
 		}
 	}
 	
+	//shuffle the deck
 	public boolean shuffle(){
-		//shuffle the deck
 		Collections.shuffle(deck);
 		return true;
 	}
 	
+	//pop the top card from the deck and return it
 	public Card hit(){
-		//pop the top card from the deck and return it
 		return (Card) deck.pop();
 	}
 	

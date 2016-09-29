@@ -12,8 +12,10 @@ public class DeckTest {
 	}
 
 	@Test
+	//Print out deck after init, should be in AKQJ x4 and then 2-9 x4 for each number
 	public void initTest() {
 		init();
+		
 		System.out.println("Check if deck is full");
 		while (!deck.getDeck().isEmpty()) {
 			Card card = deck.hit();
@@ -26,6 +28,7 @@ public class DeckTest {
 	}
 
 	@Test
+	//print deck out to show that it did get shuffled
 	public void shuffleTest(){
 		init();
 		System.out.println("Check if deck got shuffled");
