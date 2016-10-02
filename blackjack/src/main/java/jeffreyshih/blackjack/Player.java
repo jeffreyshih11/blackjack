@@ -116,6 +116,7 @@ public class Player {
 
 	public boolean setHand(ArrayList<Card> newHand) {
 		hand = newHand;
+		updateTotal();
 		return true;
 	}
 
