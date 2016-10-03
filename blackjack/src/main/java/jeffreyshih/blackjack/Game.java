@@ -151,7 +151,7 @@ public class Game {
 		return -2;
 	}
 
-	// return 1 if blackjack, -1 if bust, 0 if player stays, 2 if hit, 3 for
+	// return 1 if blackjack, -1 if bust, 0 if player stays, 2 if hit or mistype from player (continue playing), 3 for
 	// human blackjack
 	public int turn(Player player) {
 		player.showHandAndTotal();
@@ -163,30 +163,39 @@ public class Game {
 			return result;
 		} else {
 			if (player.getName().equals("Dealer")) {
-				if (player.getTotal() < 17) {
-					System.out.println("Dealer will hit");
-					player.addToHand(deck.hit());
-				} else {
-					System.out.println("Dealer stays");
-					return 0;
-				}
+				return dealerMoves(player);
 			} else {
-				System.out.println("Hit or Stay? (h/s)");
-				String action = in.next();
-				if (action.equals("h")) {
-					human.addToHand(deck.hit());
-
-				} else if (action.equals("s")) {
-					return 0;
-				} else {
-					System.out.println("Please type 'h' or 's'");
-					// action = in.next();
-				}
+				return humanMoves(player);
 			}
-			return 2;
+			
 		}
 	}
+	
+	//Return 0 if player stays, 2 if hit or mistypes(continue playing)
+	public int humanMoves(Player player){
+		System.out.println("Hit or Stay? (h/s)");
+		String action = in.next();
+		if (action.equals("h")) {
+			human.addToHand(deck.hit());
+		} else if (action.equals("s")) {
+			return 0;
+		} else {
+			System.out.println("Please type 'h' or 's'");
+		}
+		return 2;
+	}
 
+	//Return 0 if dealer stays, 2 if hit to follow convention in turn()
+	public int dealerMoves(Player dealer){
+		if (dealer.getTotal() < 17) {
+			System.out.println("Dealer will hit");
+			dealer.addToHand(deck.hit());
+			return 2;
+		} else {
+			System.out.println("Dealer stays");
+			return 0;
+		}
+	}
 	/*
 	 * Return -1 if bust, 1 for blackjack and win, 3 for blackjack and continue,
 	 * 0 if neither
@@ -226,8 +235,8 @@ public class Game {
 			// System.out.println("found ace==========");
 			player.changeAce();
 			player.updateTotal();
-			System.out.println("Value of ace change from 11 to 1");
-			System.out.println("Updated Hand:");
+			System.out.println("---Value of ace change from 11 to 1---");
+			System.out.println("Updated Total:");
 			player.showHandAndTotal();
 			// dealer.getTotal());
 			return false;
