@@ -1,8 +1,6 @@
 package jeffreyshih.blackjack;
 
-import java.io.Console;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Player {
 
@@ -57,12 +55,25 @@ public class Player {
 
 	// return true if there is an ace and its value got changed
 	public boolean changeAce() {
-
-		hand.get(hasAce()).changeAceValue();
-		return true;
+		int aceIdx = hasAce();
+		if(aceIdx != -1){	//redundant check but for safety 
+			hand.get(aceIdx).changeAceValue();
+			return true;
+		}
+		return false;
 
 	}
 
+	//
+	public void processAce(){
+		changeAce();
+		updateTotal();
+		System.out.println("---Value of ace change from 11 to 1---");
+		System.out.println("Updated Total:");
+		showHandAndTotal();
+		// dealer.getTotal());
+	}
+	
 	public boolean showHandAndTotal() {
 		// check hand a total
 		System.out.print("	Hand: ");

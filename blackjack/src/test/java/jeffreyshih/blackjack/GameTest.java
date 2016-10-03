@@ -11,23 +11,23 @@ import org.junit.Test;
 public class GameTest {
 
 	Game game = new Game();
-	Player player = new Player("Tester");
-	Player dealer = new Player("Dealer");
-	ArrayList<Card> playerHand = new ArrayList<Card>();
+	Human human = new Human("Tester");
+	Dealer dealer = new Dealer();
+	ArrayList<Card> humanHand = new ArrayList<Card>();
 	ArrayList<Card> dealerHand = new ArrayList<Card>();
 	
 	@Test
 	public void humanWin() {
 		System.out.println("Human win testing....");
-		playerHand.add(new Card("9", 9));
-		playerHand.add(new Card("9", 9));
-		player.setHand(playerHand);
+		humanHand.add(new Card("9", 9));
+		humanHand.add(new Card("9", 9));
+		human.setHand(humanHand);
 		
 		dealerHand.add(new Card("8", 8));
 		dealerHand.add(new Card("8", 8));
 		dealer.setHand(dealerHand);
 		
-		assertEquals(1, game.getWinner(player, dealer));
+		assertEquals(1, game.getWinner(human, dealer));
 		//fail("Not yet implemented");
 	}
 
@@ -38,41 +38,93 @@ public class GameTest {
 		dealerHand.add(new Card("9", 9));
 		dealer.setHand(dealerHand);
 		
-		playerHand.add(new Card("8", 8));
-		playerHand.add(new Card("8", 8));
-		player.setHand(playerHand);
+		humanHand.add(new Card("8", 8));
+		humanHand.add(new Card("8", 8));
+		human.setHand(humanHand);
 		
-		assertEquals(0, game.getWinner(player, dealer));
-	}
-	
-	@Test
-	public void humanBlackjackWin() {
-		fail("Not yet implemented");
-	}
-	
-	@Test
-	public void humanBust() {
-		fail("Not yet implemented");
-	}
-	
-	@Test
-	public void dealerBlackjackWin() {
-		fail("Not yet implemented");
-	}
-	
-	@Test
-	public void dealerBust() {
-		fail("Not yet implemented");
+		assertEquals(0, game.getWinner(human, dealer));
 	}
 	
 	@Test
 	public void tie() {
-		fail("Not yet implemented");
+		humanHand.add(new Card("9", 9));
+		human.setHand(humanHand);
+		
+		dealerHand.add(new Card("9", 9));
+		dealer.setHand(dealerHand);
+		
+		assertEquals(-1, game.getWinner(human, dealer));
 	}
-
+	
 	@Test
-	public void blackjackTie() {
-		fail("Not yet implemented");
+	public void processBlackjackTest(){
+		//no blackjack
+		humanHand.add(new Card("8", 8));
+		humanHand.add(new Card("8", 8));
+		human.setHand(humanHand);
+		assertEquals(0, game.processBlackjack(human));
+		
+		//blackjack dealer
+		dealerHand.add(new Card("A", 11));
+		dealerHand.add(new Card("K", 10));
+		dealer.setHand(dealerHand);
+		game.human = human;
+		game.dealer = dealer;
+		assertEquals(1, game.processBlackjack(dealer));
+		
+		//blackjack human but not in 2 cards
+		humanHand.add(new Card("5", 5));
+		human.setHand(humanHand);
+		assertEquals(3, game.processBlackjack(human));
+		
+		//blackjack human in 2 cards
+		humanHand.clear();
+		humanHand.add(new Card("K", 10));
+		humanHand.add(new Card("A", 11));
+		human.setHand(humanHand);
+		assertEquals(3, game.processBlackjack(human));
+		
+		//blackjack human in 2 cards but no blackjack for dealer in 2 cards
+		dealerHand.clear();
+		dealerHand.add(new Card("K", 10));
+		dealerHand.add(new Card("K", 10));
+		dealer.setHand(dealerHand);
+		game.human = human;
+		assertEquals(1, game.processBlackjack(dealer));
+		
+		
+	}
+	
+	@Test 
+	public void processBustTest(){
+		//no ace human bust
+		humanHand.add(new Card("9", 9));
+		humanHand.add(new Card("9", 9));
+		humanHand.add(new Card("9", 9));
+		human.setHand(humanHand);
+		assertEquals(-1, game.processBust(human));
+		
+		//no ace dealer bust
+		dealerHand.add(new Card("8", 8));
+		dealerHand.add(new Card("8", 8));
+		dealerHand.add(new Card("8", 8));
+		dealer.setHand(dealerHand);
+		assertEquals(-1, game.processBust(dealer));
+		
+		//ace bust
+		human.addToHand(new Card("A", 11));
+		assertEquals(-1, game.processBust(human));
+		
+		//no bust
+		humanHand.clear();
+		humanHand.add(new Card("9", 9));
+		humanHand.add(new Card("10", 10));
+		human.setHand(humanHand);
+		assertEquals(0, game.processBust(human));
+		
+		//no bust with ace
+		human.addToHand(new Card("A", 11));
+		assertEquals(0, game.processBust(human));
 	}
 }
 

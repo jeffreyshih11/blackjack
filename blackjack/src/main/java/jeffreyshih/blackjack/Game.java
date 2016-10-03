@@ -13,8 +13,8 @@ public class Game {
 	 * 
 	 */
 
-	Player dealer;
-	Player human;
+	Dealer dealer;
+	Human human;
 	Deck deck;
 	boolean firstTime = true;
 	boolean gameOver = false;
@@ -63,12 +63,12 @@ public class Game {
 	public boolean setUp() {
 
 		if (firstTime) {
-			dealer = new Player("Dealer");
+			dealer = new Dealer();
 
 			System.out.print("First, what is your name?  ");
 			String name = in.next();
 
-			human = new Player(name);
+			human = new Human(name);
 		}
 
 		deck = new Deck();
@@ -99,9 +99,21 @@ public class Game {
 		System.out.println("-----Your turn-----");
 		while (!endTurn) {
 			int action = turn(human);
+			// bust
 			if (action == -1) {
+				dealer.addWin();	// dealer wins if you bust no matter what
 				return true;
-			} else if (action == 1 || action == 0 || action == 3) {
+			}
+			// hit
+			else if (action == 2) {
+				human.addToHand(deck.hit());
+			}
+			// mistype
+			else if (action == -2) {
+				System.out.println("Please type 'h' or 's'");
+			}
+			// blackjack in 2 cards, stay, blackjack not in 2 cards
+			else if (action == 1 || action == 0 || action == 3) {
 				endTurn = true;
 			}
 		}
@@ -116,9 +128,17 @@ public class Game {
 
 		while (!endTurn) {
 			int action = turn(dealer);
+			// bust
 			if (action == -1) {
+				human.addWin();
 				return true;
-			} else if (action == 1 || action == 0) {
+			}
+			// bust
+			else if (action == 2) {
+				dealer.addToHand(deck.hit());
+			}
+			// blackjack and end, stay
+			else if (action == 1 || action == 0) {
 				endTurn = true;
 			}
 		}
@@ -151,8 +171,9 @@ public class Game {
 		return -2;
 	}
 
-	// return 1 if blackjack, -1 if bust, 0 if player stays, 2 if hit or mistype from player (continue playing), 3 for
-	// human blackjack
+	// return 1 if blackjack, -1 if bust, 0 if player stays, 2 if hit, -2
+	// if mistype from player (continue playing), 3 for
+	// human blackjack and continue
 	public int turn(Player player) {
 		player.showHandAndTotal();
 
@@ -163,84 +184,65 @@ public class Game {
 			return result;
 		} else {
 			if (player.getName().equals("Dealer")) {
-				return dealerMoves(player);
+				return dealer.turn();
 			} else {
-				return humanMoves(player);
+				return human.turn();
 			}
-			
+
 		}
-	}
-	
-	//Return 0 if player stays, 2 if hit or mistypes(continue playing)
-	public int humanMoves(Player player){
-		System.out.println("Hit or Stay? (h/s)");
-		String action = in.next();
-		if (action.equals("h")) {
-			human.addToHand(deck.hit());
-		} else if (action.equals("s")) {
-			return 0;
-		} else {
-			System.out.println("Please type 'h' or 's'");
-		}
-		return 2;
 	}
 
-	//Return 0 if dealer stays, 2 if hit to follow convention in turn()
-	public int dealerMoves(Player dealer){
-		if (dealer.getTotal() < 17) {
-			System.out.println("Dealer will hit");
-			dealer.addToHand(deck.hit());
-			return 2;
-		} else {
-			System.out.println("Dealer stays");
-			return 0;
-		}
-	}
 	/*
-	 * Return -1 if bust, 1 for blackjack and win, 3 for blackjack and continue,
+	 * Return 1 for blackjack and win, -1 if bust, 3 for blackjack and continue,
 	 * 0 if neither
 	 */
 	public int checkBustOrBlackjack(Player player) {
 		// Check if bust
-		if (player.checkBust()) {
-			if (processBust(player)) {
-				return -1;
-			}
-		}
+		/*if (player.checkBust()) {
+			return processBust(player);
+		}*/
 
-		int processBJ = processBlackjack(player);
-		if (processBJ != 0) {
-			return processBJ;
+		int bust = processBust(player);
+		if(bust != 0){
+			return bust;
 		}
+		
+		return processBlackjack(player);
 
-		return 0;
+		/*
+		 * int processBJ = processBlackjack(player); if (processBJ != 0) {
+		 * return processBJ; }
+		 * 
+		 * return 0;
+		 */
 	}
 
 	/*
-	 * Return true is the player bust, false if not
+	 * Return -1 is the player bust, 0 if not
 	 */
-	public boolean processBust(Player player) {
-		if (player.hasAce() == -1) {
-			if (player.getName().equals("Dealer")) {
-				System.out.println("Dealer bust!\n");
-				human.addWin();
-			} else {
-				System.out.println("~You bust!~\n");
-				dealer.addWin(); // dealer wins if you bust no matter what
-			}
+	public int processBust(Player player) {
+		// no ace, so bust
+		if (player.checkBust()) {
+			if (player.hasAce() == -1) {
+				if (player.getName().equals("Dealer")) {
+					System.out.println("Dealer bust!\n");
+					//human.addWin();
+				} else {
+					System.out.println("~You bust!~\n");
+					//dealer.addWin(); 
+				}
 
-			endTurn = true;
-			return true;
-		} else {
-			// System.out.println("found ace==========");
-			player.changeAce();
-			player.updateTotal();
-			System.out.println("---Value of ace change from 11 to 1---");
-			System.out.println("Updated Total:");
-			player.showHandAndTotal();
-			// dealer.getTotal());
-			return false;
+				// endTurn = true;
+				return -1;
+			}
+			// has ace so no bust
+			else {
+				player.processAce();
+				return processBust(player);	//check if bust even after transforming ace
+				//return 0;
+			}
 		}
+		return 0;
 	}
 
 	// return 1 to end the game, 3 for blackjack but keep going, 0 for no
@@ -248,28 +250,9 @@ public class Game {
 	public int processBlackjack(Player player) {
 		// endTurn = true;
 		if (player.checkBlackjack()) {
+			//dealer got blackjack
 			if (player.getName().equals("Dealer")) {
-				System.out.println("Blackjack!");
-
-				// check if the human also got blackjack
-				if (winByBlackjack) {
-					if (human.getHand().size() == 2) {
-						// both players got blackjack in 2 cards
-						if (dealer.getHand().size() == 2) {
-							System.out.println("--Tie Game--\n");
-						}
-					}
-				} else {
-					// dealer got blackjack in 2 but you didnt
-					if (dealer.getHand().size() == 2) {
-						System.out.println("~~Dealer won!~~\n");
-					}
-					// tie game if both get blackjack but not in 2 cards
-					else {
-						System.out.println("--Tie Game--\n");
-					}
-				}
-
+				processBJDealer();
 				return 1;
 			}
 			// if human got blackjack
@@ -279,14 +262,41 @@ public class Game {
 				return 3;
 			}
 		} else {
+			// you got blackjack in 2 but dealer didnt
 			if (winByBlackjack) {
 				if (human.getHand().size() == 2) {
-					// you got blackjack in 2 but dealer didnt
 					return 1;
 				}
 			}
+			
+			//keep going because neither players have blackjack
+			return 0;
 		}
-		return 0;
+		
+	}
+
+	// prints out the correct message
+	public void processBJDealer() {
+		System.out.println("Blackjack!");
+
+		// check if the human also got blackjack
+		if (winByBlackjack) {
+			if (human.getHand().size() == 2) {
+				// both players got blackjack in 2 cards
+				if (dealer.getHand().size() == 2) {
+					System.out.println("--Tie Game--\n");
+				}
+			}
+		} else {
+			// dealer got blackjack in 2 but you didnt
+			if (dealer.getHand().size() == 2) {
+				System.out.println("~~Dealer won!~~\n");
+			}
+			// tie game if both get blackjack but not in 2 cards
+			else {
+				System.out.println("--Tie Game--\n");
+			}
+		}
 	}
 
 }

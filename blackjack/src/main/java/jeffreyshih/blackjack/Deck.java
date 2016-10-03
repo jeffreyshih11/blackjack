@@ -10,7 +10,7 @@ public class Deck {
 	//populate deck with cards, numerical cards first then JQKA
 	public Deck(){
 		//for card 2-9
-		for(int i = 2; i < 10; i++){
+		for(int i = 2; i <= 10; i++){
 			for(int j = 0; j < 4; j++){
 				String rank = String.valueOf(i);
 				Card toAdd = new Card(rank, i);
@@ -42,12 +42,18 @@ public class Deck {
 	}
 	
 	//pop the top card from the deck and return it
+	//return null if empty stack exception happens
 	public Card hit(){
-		return (Card) deck.pop();
+		try{
+			return (Card) deck.pop();
+		}
+		catch(Exception e){
+			return null;
+		}
 	}
 	
 	//for testing purposes
-	public Stack getDeck(){
+	public Stack<Card> getDeck(){
 		return deck;
 	}
 	

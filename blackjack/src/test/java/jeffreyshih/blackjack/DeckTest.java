@@ -41,4 +41,21 @@ public class DeckTest {
 		System.out.println("-----------------------------------------");
 		assertEquals(true, true);
 	}
+	
+	@Test 
+	public void hitTest(){
+		init();
+		deck.shuffle();
+		Card topOfDeck = deck.getDeck().peek();
+		Card popped = deck.hit();
+		assertEquals(topOfDeck, popped);
+		
+		assertEquals(51, deck.getDeck().size());
+		
+		for(int i = 0; i < 51; i++){
+			deck.hit();
+		}
+		assertEquals(0, deck.getDeck().size());
+		assertNull(deck.hit());
+	}
 }
