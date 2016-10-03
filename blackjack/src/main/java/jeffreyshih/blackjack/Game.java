@@ -156,11 +156,11 @@ public class Game {
 	public int getWinner(Player person, Player Dealer) {
 		if (person.getTotal() > Dealer.getTotal()) {
 			person.addWin();
-			System.out.println("~You beat the dealer!~\n");
+			System.out.println("~~You beat the dealer!~~\n");
 			return 1;
 		} else if (Dealer.getTotal() > person.getTotal()) {
 			Dealer.addWin();
-			System.out.println("~The dealer won!~\n");
+			System.out.println("The dealer won :(\n");
 			return 0;
 
 		} else if (person.getTotal() == Dealer.getTotal()) {
@@ -252,7 +252,7 @@ public class Game {
 		if (player.checkBlackjack()) {
 			//dealer got blackjack
 			if (player.getName().equals("Dealer")) {
-				processBJDealer();
+				//processBJDealer();
 				return 1;
 			}
 			// if human got blackjack
@@ -276,7 +276,7 @@ public class Game {
 	}
 
 	// prints out the correct message
-	public void processBJDealer() {
+	/*public void processBJDealer() {
 		System.out.println("Blackjack!");
 
 		// check if the human also got blackjack
@@ -297,6 +297,6 @@ public class Game {
 				System.out.println("--Tie Game--\n");
 			}
 		}
-	}
+	}*/
 
 }
