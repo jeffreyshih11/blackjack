@@ -5,33 +5,40 @@ import java.util.Scanner;
 public class Game {
 
 	/*
-	 * create dealer create deck and shuffle (just add cards back and shuffle if
+	 * create dealer create deck and shuffle (get full deck and shuffle if
 	 * playing again) prompt player to enter name and then create human player
 	 * ask if ready deal cards player first, then dealer dealer always has to
-	 * hit if total < 17 end game if human busts end game if dealer value goes
-	 * above human total or bust or tie ask to play again
+	 * hit if total < 17 end game right away if human busts end game, if human
+	 * gets blackjack, give the dealer a chance. if dealer gets blackjack and
+	 * human didn't, end game, if dealer busts end game. if neither bust or get
+	 * blackjack, compare totals and determine winner. Ask to play again until
+	 * user says no.
 	 * 
 	 */
 
 	Dealer dealer;
 	Human human;
 	Deck deck;
-	boolean firstTime = true;
-	boolean gameOver = false;
-	boolean end = false;
 	Scanner in = new Scanner(System.in);
 
-	boolean endTurn;
+	boolean firstTime = true;
+	// boolean endTurn;
 
 	// for human
 	boolean winByBlackjack = false;
 	boolean loseByBust = false;
 
+	/*
+	 * Main method to run the game.
+	 * Keeps playing until user enters 'n' when prompted to play again or if they are ready
+	 */
 	public void start() {
+
 		System.out.println("Let's play some blackjack!");
 		setUp();
 		System.out.println("Welcome " + human.getName() + "!");
-
+		
+		boolean end = false;
 		while (!end) {
 
 			if (firstTime) {
@@ -54,12 +61,17 @@ public class Game {
 				end = true;
 			} else {
 				System.out.println("Please type 'y' or 'n'");
-				// ready = in.next();
 			}
 		}
 		System.out.println("Thanks for playing!");
 	}
 
+	/*
+	 * Creates the deck, shuffles it, then deals the players
+	 * their cards. If it's the first game, user will be prompted
+	 * to enter their name and the player and dealer will be created
+	 * 
+	 */
 	public boolean setUp() {
 
 		if (firstTime) {
@@ -85,6 +97,9 @@ public class Game {
 		return true;
 	}
 
+	/*
+	 * Resets the dealer and human and sets up a new game
+	 */
 	public boolean reset() {
 		dealer.reset();
 		human.reset();
@@ -92,17 +107,23 @@ public class Game {
 		return true;
 	}
 
-	public boolean play() {
+	/*
+	 * Plays the game, human goes first.
+	 * If human or dealer busts, return immediately 
+	 * Turn ends when player stay or blackjacks
+	 * Compare totals after both turns end
+	 */
+	public int play() {
 		// human side
-		endTurn = false;
+		boolean endTurn = false;
 
 		System.out.println("-----Your turn-----");
 		while (!endTurn) {
 			int action = turn(human);
 			// bust
 			if (action == -1) {
-				dealer.addWin();	// dealer wins if you bust no matter what
-				return true;
+				dealer.addWin(); // dealer wins if you bust no matter what
+				return -1;
 			}
 			// hit
 			else if (action == 2) {
@@ -120,18 +141,14 @@ public class Game {
 
 		// dealer
 		endTurn = false;
-
 		System.out.println("-----Dealer's Turn------");
-		/*
-		 * while (!endTurn) { if (endTurn = turn(dealer)) { return true; } }
-		 */
 
 		while (!endTurn) {
 			int action = turn(dealer);
 			// bust
 			if (action == -1) {
 				human.addWin();
-				return true;
+				return 1;
 			}
 			// bust
 			else if (action == 2) {
@@ -144,9 +161,9 @@ public class Game {
 		}
 
 		System.out.println("");
-		// getWinner(human, dealer);
+		
 
-		return (getWinner(human, dealer) != -2);
+		return getWinner(human, dealer);
 	}
 
 	/*
@@ -186,7 +203,9 @@ public class Game {
 			if (player.getName().equals("Dealer")) {
 				return dealer.turn();
 			} else {
-				return human.turn();
+				System.out.println("Hit or Stay? (h/s)");
+				String action = in.next();
+				return human.turn(action);
 			}
 
 		}
@@ -198,15 +217,15 @@ public class Game {
 	 */
 	public int checkBustOrBlackjack(Player player) {
 		// Check if bust
-		/*if (player.checkBust()) {
-			return processBust(player);
-		}*/
+		/*
+		 * if (player.checkBust()) { return processBust(player); }
+		 */
 
 		int bust = processBust(player);
-		if(bust != 0){
+		if (bust != 0) {
 			return bust;
 		}
-		
+
 		return processBlackjack(player);
 
 		/*
@@ -226,33 +245,34 @@ public class Game {
 			if (player.hasAce() == -1) {
 				if (player.getName().equals("Dealer")) {
 					System.out.println("Dealer bust!\n");
-					//human.addWin();
+
 				} else {
 					System.out.println("~You bust!~\n");
-					//dealer.addWin(); 
+
 				}
 
-				// endTurn = true;
 				return -1;
 			}
 			// has ace so no bust
 			else {
 				player.processAce();
-				return processBust(player);	//check if bust even after transforming ace
-				//return 0;
+				return processBust(player); // check if bust even after
+											// transforming ace
+
 			}
 		}
 		return 0;
 	}
 
-	// return 1 to end the game, 3 for blackjack but keep going, 0 for no
-	// blackjack
+	/*
+	 *  return 1 to end the game, 3 for blackjack but keep going, 0 for no blackjack
+	 */
 	public int processBlackjack(Player player) {
 		// endTurn = true;
 		if (player.checkBlackjack()) {
-			//dealer got blackjack
+			// dealer got blackjack
 			if (player.getName().equals("Dealer")) {
-				//processBJDealer();
+				// processBJDealer();
 				return 1;
 			}
 			// if human got blackjack
@@ -268,35 +288,34 @@ public class Game {
 					return 1;
 				}
 			}
-			
-			//keep going because neither players have blackjack
+
+			// keep going because neither players have blackjack
 			return 0;
 		}
-		
+
 	}
 
-	// prints out the correct message
-	/*public void processBJDealer() {
+	// prints out the correct message (turned to be redundant)
+	/*
+	public void processBJDealer() {
 		System.out.println("Blackjack!");
 
 		// check if the human also got blackjack
 		if (winByBlackjack) {
-			if (human.getHand().size() == 2) {
-				// both players got blackjack in 2 cards
+			if (human.getHand().size() == 2) { // both players got blackjack in 2 cards
 				if (dealer.getHand().size() == 2) {
 					System.out.println("--Tie Game--\n");
 				}
 			}
-		} else {
-			// dealer got blackjack in 2 but you didnt
+		} else { // dealer got blackjack in 2 but you didnt
 			if (dealer.getHand().size() == 2) {
 				System.out.println("~~Dealer won!~~\n");
-			}
-			// tie game if both get blackjack but not in 2 cards
+			} // tie game if both get blackjack but not in 2 cards
 			else {
 				System.out.println("--Tie Game--\n");
 			}
 		}
-	}*/
+	}
+	*/
 
 }

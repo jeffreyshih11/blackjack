@@ -10,10 +10,9 @@ public class Human extends Player {
 		super(name);
 	}
 
-	// Return 0 if player stays, 2 if hit, -2 if player mistypes(continue playing)
-	public int turn() {
-		System.out.println("Hit or Stay? (h/s)");
-		String action = in.next();
+	//Turn takes in a string action that the user inputs 
+	//Return 0 if player stays, 2 if hit, -2 if player mistypes(continue playing)
+	public int turn(String action) {
 		if (action.equals("h")) {
 			return 2;
 		} else if (action.equals("s")) {

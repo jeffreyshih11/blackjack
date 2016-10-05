@@ -2,6 +2,11 @@ package jeffreyshih.blackjack;
 
 import java.util.ArrayList;
 
+/*
+ * Player needs - name, list of cards in their hand
+ * the sum of their cards
+ * *added number of wins for continuous play*
+ */
 public class Player {
 
 	private String name;
@@ -16,16 +21,25 @@ public class Player {
 		numWins = 0;
 	}
 
+	/*
+	 * Clear hand and set total to 0
+	 */
 	public boolean reset() {
 		hand.clear();
 		total = 0;
 		return true;
 	}
 
+	/*
+	 * add new card to players hand
+	 */
 	public boolean addToHand(Card card) {
 		return hand.add(card);
 	}
 
+	/*
+	 * get the new total of the cards in a players hand
+	 */
 	public boolean updateTotal() {
 		total = 0;
 		for (Card card : hand) {
@@ -35,14 +49,25 @@ public class Player {
 		return true;
 	}
 
+	/*
+	 * see if the players total is greater than 21
+	 */
 	public boolean checkBust() {
 		return (total > 21);
 	}
 
+	/*
+	 * see if players total is 21
+	 */
 	public boolean checkBlackjack() {
 		return (total == 21);
 	}
 
+	/*
+	 * see if the player has an ace in their hand 
+	 * return the index of the ace if it exists
+	 * -1 otherwise
+	 */
 	public int hasAce() {
 		//System.out.println("looking for ace");
 		for(Card card: hand){
@@ -64,7 +89,7 @@ public class Player {
 
 	}
 
-	//
+	//change the value of the ace and update the total
 	public void processAce(){
 		changeAce();
 		updateTotal();
@@ -74,6 +99,10 @@ public class Player {
 		// dealer.getTotal());
 	}
 	
+	/*
+	 * Prints the cards in the players hand
+	 * and updates the total and shows the player
+	 */
 	public boolean showHandAndTotal() {
 		// check hand a total
 		System.out.print("	Hand: ");
@@ -90,23 +119,28 @@ public class Player {
 		return true;
 	}
 
+	//adds a win 
 	public boolean addWin() {
 		numWins++;
 		return true;
 	}
 
+	//returns the players name
 	public String getName() {
 		return name;
 	}
 
+	//returns the players hand
 	public ArrayList<Card> getHand() {
 		return hand;
 	}
 
+	//returns the sum of the values of the cards in the players hand
 	public int getTotal() {
 		return total;
 	}
 
+	//returns the number of wins
 	public int getNumWins() {
 		return numWins;
 	}

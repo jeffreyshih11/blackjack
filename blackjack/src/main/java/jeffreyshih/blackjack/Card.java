@@ -1,5 +1,8 @@
 package jeffreyshih.blackjack;
 
+/*
+ * Cards only need 2 variables, rank and value.
+ */
 public class Card {
 
 	private String rank;

@@ -8,6 +8,7 @@ public class CardTest {
 
 	
 	@Test
+	//make sure changeAce only works on an ace with value of 11
 	public void changeAceTest() {
 		Card ace = new Card("A", 11);	//default for Aces when they get put in the deck
 		assertEquals(ace.getValue(), 11);
@@ -15,7 +16,7 @@ public class CardTest {
 		ace.changeAceValue();
 		assertEquals(ace.getValue(), 1);
 		
-		ace.changeAceValue();	//test that changeAceValue only works when ace value is 11
+		ace.changeAceValue();	//ace value is 1 now
 		assertFalse(ace.getValue() == 11);
 		
 		Card two = new Card("2", 2);	//create other card to make sure changeAceValue only works with aces
@@ -23,7 +24,9 @@ public class CardTest {
 		assertTrue(two.getValue() != 1);
 	}
 	
-	@Test public void getValueTest(){
+	@Test 
+	//make sure getValue returns correct value
+	public void getValueTest(){
 		Card jack = new Card("J", 10);	
 		assertEquals(jack.getValue(), 10);
 		
@@ -38,7 +41,9 @@ public class CardTest {
 	
 	}
 
-	@Test public void getRankTest(){
+	@Test 
+	//make sure getRank returns correct string
+	public void getRankTest(){
 		Card jack = new Card("J", 10);	
 		assertEquals(jack.getRank(), "J");
 		

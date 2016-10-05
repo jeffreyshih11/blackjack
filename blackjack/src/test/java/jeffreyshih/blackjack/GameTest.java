@@ -57,6 +57,11 @@ public class GameTest {
 	}
 
 	@Test
+	// Check all the possibilities of processBlackjack
+	// 0 if no blackjack
+	// 1 to end the game and check results
+	// 3 if human gets blackjack but need to give dealer a chance
+	//
 	public void processBlackjackTest() {
 		// no blackjack
 		humanHand.add(new Card("8", 8));
@@ -94,6 +99,10 @@ public class GameTest {
 	}
 
 	@Test
+	//check all the possibilities with blackjack wins
+	//1 if the human wins
+	//0 if dealer wins
+	//-1 if tie
 	public void blackjackWinsTest() {
 		// human wins with 2 cards
 		humanHand.add(new Card("K", 10));
@@ -118,38 +127,41 @@ public class GameTest {
 		dealer.setHand(dealerHand);
 
 		assertEquals(0, game.getWinner(human, dealer));
-		
-		//both got blackjack in 2
+
+		// both got blackjack in 2
 		humanHand.clear();
 		humanHand.add(new Card("K", 10));
 		humanHand.add(new Card("A", 11));
 		human.setHand(humanHand);
-		
+
 		dealerHand.clear();
 		dealerHand.add(new Card("K", 10));
 		dealerHand.add(new Card("A", 11));
 		dealer.setHand(dealerHand);
-		
+
 		assertEquals(-1, game.getWinner(human, dealer));
-		
-		//both got blackjack in more than 2
+
+		// both got blackjack in more than 2
 		humanHand.clear();
 		humanHand.add(new Card("K", 10));
 		humanHand.add(new Card("9", 9));
 		humanHand.add(new Card("2", 2));
 		human.setHand(humanHand);
-		
+
 		dealerHand.clear();
 		dealerHand.add(new Card("K", 10));
 		dealerHand.add(new Card("9", 9));
 		dealerHand.add(new Card("2", 2));
 		dealer.setHand(dealerHand);
-		
+
 		assertEquals(-1, game.getWinner(human, dealer));
 
 	}
 
 	@Test
+	//If a player busts, should end the game
+	//-1 if bust
+	//0 if no bust
 	public void processBustTest() {
 		// no ace human bust
 		humanHand.add(new Card("9", 9));
